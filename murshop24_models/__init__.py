@@ -37,6 +37,19 @@ class TgReviewsChannel(Base):
         return str(self.invite_link)
 
 
+class TgCustomerGroup(Base):
+    __tablename__ = "tg_customer_group"
+
+    id: orm.Mapped[int] = orm.mapped_column(sqla.BigInteger, primary_key=True)
+    invite_link: orm.Mapped[str] = orm.mapped_column(unique=True)
+    tg_bots: orm.Mapped[list[TgBot]] = orm.relationship(
+        back_populates="tg_customer_group"
+    )
+
+    def __str__(self) -> str:
+        return str(self.invite_link)
+
+
 class TgBot(Base):
     __tablename__ = "tg_bot"
 
@@ -51,8 +64,14 @@ class TgBot(Base):
     tg_reviews_channel_id: orm.Mapped[int | None] = orm.mapped_column(
         sqla.BigInteger, sqla.ForeignKey("tg_reviews_channel.id")
     )
+    tg_customer_group_id: orm.Mapped[int | None] = orm.mapped_column(
+        sqla.BigInteger, sqla.ForeignKey("tg_customer_group.id")
+    )
     tg_operator: orm.Mapped[TgOperator] = orm.relationship(back_populates="tg_bots")
     tg_reviews_channel: orm.Mapped[TgReviewsChannel | None] = orm.relationship(
+        back_populates="tg_bots"
+    )
+    tg_customer_group: orm.Mapped[TgCustomerGroup | None] = orm.relationship(
         back_populates="tg_bots"
     )
 
